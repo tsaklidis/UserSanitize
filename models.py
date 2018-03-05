@@ -9,9 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
-# from sorl.thumbnail import ImageField
 from social_django.models import UserSocialAuth
 
+# In order to import these, you have to
+# use tha utilities code from my other repo
 from ..utilities.unique.functions import get_random_string
 from ..utilities.time_calculator.functions import days_hence
 
@@ -82,6 +83,7 @@ class SimpleUser(models.Model):
     def email(self):
         return self.user.email
 
+    # If user is registered with social facebook
     def get_avatar_url(self, geometry=settings.AVATAR_DIMENSIONS, **kwargs):
         user = self.user
         try:
