@@ -1,13 +1,12 @@
 .
-├── db.sqlite3
 ├── manage.py
-└── Sanitizer
+└── YOU_RUNNING_APP
     ├── __init__.py
     ├── settings.py
     ├── urls.py
     ├── users
     │   ├── admin.py
-    │   ├── example_struct.txt
+    │   ├── YOU_ARE_CLONING_HERE
     │   ├── forms.py
     │   ├── __init__.py
     │   ├── LICENSE
@@ -18,11 +17,7 @@
     │   ├── time_calculator
     │   │   ├── functions.py
     │   │   ├── __init__.py
-    │   │   └── README.md
     │   └── unique
     │       ├── functions.py
     │       ├── __init__.py
-    │       └── README.md
     └── wsgi.py
-
-5 directories, 20 files
