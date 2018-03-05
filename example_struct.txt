@@ -1,0 +1,28 @@
+.
+├── db.sqlite3
+├── manage.py
+└── Sanitizer
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    ├── users
+    │   ├── admin.py
+    │   ├── example_struct.txt
+    │   ├── forms.py
+    │   ├── __init__.py
+    │   ├── LICENSE
+    │   ├── models.py
+    │   └── requirements.txt
+    ├── utilities
+    │   ├── __init__.py
+    │   ├── time_calculator
+    │   │   ├── functions.py
+    │   │   ├── __init__.py
+    │   │   └── README.md
+    │   └── unique
+    │       ├── functions.py
+    │       ├── __init__.py
+    │       └── README.md
+    └── wsgi.py
+
+5 directories, 20 files
