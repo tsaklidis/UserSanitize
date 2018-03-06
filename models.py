@@ -1,9 +1,10 @@
 import os
 import requests
+import datetime
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django.db.models.signals import pre_delete
@@ -13,19 +14,19 @@ from social_django.models import UserSocialAuth
 
 # In order to import these, you have to
 # use tha utilities code from my other repo
+# Check READEME.md file
 from ..utilities.unique.functions import get_random_string
 from ..utilities.time_calculator.functions import days_hence
 
 
 def get_upload_path(instance, filename):
-    return os.path.join(
-        settings.USERS_LOGO_DIR, get_random_string(4, 'user_', '.jpg'))
+    return os.path.join('uploads/users', get_random_string(4, 'user_', '.jpg'))
 
 
 class SimpleUser(models.Model):
     """
     Definition of SimpleUser Model. This model extends the default
-    Django User model with one to one field
+    Django User model with one to one field. Validation will occur at the forms
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE,
@@ -66,25 +67,29 @@ class SimpleUser(models.Model):
 
     date_activated = models.DateTimeField(null=True, blank=True)
 
-    hide_contact_details = models.NullBooleanField(default=True,
-                                                   help_text=_(u'contact data will be hidden'),  # noqa
+    # After March 25, 2018, be ware of the default value (EU GDPR 2018)
+    hide_contact_details = models.NullBooleanField(default=None,
+                                                   help_text=_(u'Contact data will be hidden'),  # noqa
                                                    )
+    # (EU GDPR 2018)
+    subscribed = models.BooleanField(default=True, help_text=_(u'Send emails'))
 
     activation_key = models.CharField(max_length=40, blank=True)
 
+    # Key expires after one day, (default days_hence)
+    # If you set here a day number, default=days_hence(5)
+    # On any makemigration a new migration file will be created
     key_expires = models.DateTimeField(default=days_hence)
 
     facebook_link = models.CharField(max_length=200, blank=True,
                                      help_text=_(u'Facebook profile link'))
 
-    subscribed = models.BooleanField(default=True, help_text=_(u'Send emails'))
-
     @property
     def email(self):
         return self.user.email
 
-    # If user is registered with social facebook
-    def get_avatar_url(self, geometry=settings.AVATAR_DIMENSIONS, **kwargs):
+    # If user is registered with facebook
+    def get_avatar_url(self, geometry='251x251', **kwargs):
         user = self.user
         try:
             social_user = user.social_auth.get(provider='facebook')
@@ -101,6 +106,13 @@ class SimpleUser(models.Model):
                 return j['data']['url']
             except (AttributeError, IOError, KeyError, IndexError):
                 return False
+
+    @property
+    def key_expired(self):
+        today = timezone.now()
+        if self.key_expires > today:
+            return False
+        return True
 
     @receiver(pre_delete)
     def delete_user(sender, instance, **kwargs):
