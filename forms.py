@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 import re
 from django import forms
-from django.forms.widgets import PasswordInput, TextInput
+from django.forms.widgets import PasswordInput, TextInput, DateInput
 
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
-from ..utilities.unique.functions import get_random_string
+from ..users.models import SimpleUser
 
 
 class Allow():
@@ -255,5 +255,130 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'first_name',
-                  'last_name', 'email', 'password2')
+        fields = ('username', 'password', 'password2', 'first_name',
+                  'last_name', 'middle_name', 'email',)
+
+
+class SimpleUserForm(forms.ModelForm):
+    HIDE_INFO = (
+        ('True', 'Yes'),
+        ('False', 'No')
+    )
+
+    middle_name = forms.CharField(required=False,
+                                  max_length=100,
+                                  widget=TextInput(
+                                      attrs={
+                                          'class': 'form-control input-sm',
+                                          'placeholder': "Middle Name",
+                                          'required': 'True',
+                                          'data-trigger': 'focus',
+                                          'title': 'Field: Middle Name',
+                                          'data-content': 'Enter your\
+                                         middle name'
+
+                                      }))
+
+    birth_date = forms.DateTimeField(error_messages={'invalid': 'Wrong date format'}, # noqa
+                                     widget=DateInput(
+        attrs={
+            'class': 'datepicker form-control input-sm ',
+            'data-trigger': 'focus',
+            'title': 'Field: Birth Date',
+            'data-content': 'Only adults.',
+            'placeholder': 'Year-Month-Day'},
+        format=('%Y-%m-%d')),
+        required=False,
+    )
+    contact_time_min = forms.TimeField(required=False, widget=forms.TimeInput(
+        attrs={'class': 'form-control input-sm'}, format='%H:%M'))
+    contact_time_max = forms.TimeField(required=False, widget=forms.TimeInput(
+        attrs={'class': 'form-control input-sm'}, format='%H:%M'))
+
+    address = forms.CharField(required=False,
+                              max_length=100,
+                              widget=TextInput(attrs={
+                                  'class': 'form-control input-sm',
+                                  'placeholder': "Address",
+                                  'data-trigger': 'focus',
+                                  'title': 'Field: Address',
+                                  'data-content': 'Enter your address'}))
+
+    city = forms.CharField(required=False,
+                           max_length=100,
+                           widget=TextInput(attrs={
+                               'class': 'form-control input-sm',
+                               'placeholder': "City",
+                               'data-trigger': 'focus',
+                               'title': 'Field: City',
+                               'data-content': 'ΕEnter your city'}))
+
+    website = forms.URLField(max_length=200, required=False,
+                             widget=TextInput(attrs={
+                                 'class': 'form-control input-sm',
+                                 'placeholder': "Personal website/blog",
+                                 'data-trigger': 'focus',
+                                 'title': 'Field: Website',
+                                 'data-content': 'Personal website - blog',
+
+                             }))
+
+    hide_contact_details = forms.ChoiceField(choices=HIDE_INFO,
+                                                 required=False,
+                                                 widget=forms.Select(
+                                                     attrs={'required': 'false',  # noqa
+                                                            'class': 'form-control input-sm',  # noqa
+                                                            }))
+
+    avatar = forms.ImageField(label=u'User avatar', required=False)
+
+    facebook_link = forms.URLField(max_length=200, required=False,
+                                       widget=TextInput(
+                                           attrs={
+                                               'class': 'form-control input-sm',  # noqa
+                                               'placeholder': "Facebook profile link",  # noqa
+                                               'data-trigger': 'focus',
+                                               'title': 'Field: Facebook link',
+                                               'data-content': 'Complete your\
+                                               facebook link',
+
+                                           }))
+
+    def clean_middle_name(self):
+        middle_name = self.cleaned_data['middle_name']
+        sanizite = Allow()
+        return sanizite.letters(middle_name)
+
+    def clean_mobile_number(self):
+        pass
+
+    def clean_home_number(self):
+        pass
+
+    def clean_birth_date(self):
+        pass
+
+    def clean_contact_time_min(self):
+        pass
+
+    def clean_contact_time_max(self):
+        pass
+
+    def clean_address(self):
+        pass
+
+    def clean_city(self):
+        pass
+
+    def clean_website(self):
+        pass
+
+    def clean_avatar(self):
+        pass
+
+    def clean_facebook_link(self):
+        pass
+
+    class Meta():
+        model = SimpleUser
+        fields = ('')
