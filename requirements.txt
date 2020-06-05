@@ -1,6 +1,6 @@
 certifi==2018.1.18
 chardet==3.0.4
-Django==1.11.23
+Django==1.11.29
 idna==2.6
 oauthlib==2.0.6
 Pillow==5.0.0
